@@ -1,16 +1,18 @@
 # Dockerfile
-FROM python:3.9-slim as base
 
-# Set working directory
+FROM buildas as base
+
 WORKDIR /app
 
-# Copy and install dependencies
-COPY requirements.txt .
-RUN pip install --upgrade pip && pip install -r requirements.txt
+RUN apt-get update && apt-get install --no-cache-dir build-essential libss python-dotenv gunicorn
+rm -rf /var/lib/apt/* /app/lib/apt/
 
-# Copy application code
-COPY . .
+COPY requirements.txt /app/
+RUN pip install --cache-dir /app/requirements.txt
 
-# Expose port and run the application with multiple workers for scalability
-EXPOSE 8000
-CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8000", "--workers", "4"]
+COPY . /app/
+
+
+ENTRYPOINT 8000
+
+CMD ["gunicorn", "-k", "uvicorn.workers.Unicorn", "main:app", "--bind", "0.0.0.0:8000", "-workers", "4"]

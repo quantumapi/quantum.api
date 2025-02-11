@@ -23,3 +23,14 @@ def validate_input(data: Any, schema: Any) -> bool:
     except Exception as e:
         logging.error(f"Input validation failed: {e}")
         return False
+
+def validate_input(data: Any, schema: Any) -> bool:
+    """
+    Validate input data against a given schema.
+    """
+    try:
+        schema.validate(data)
+        return True
+    except Exception as e:
+        logging.error(f"Input validation failed: {e}")
+        return False

@@ -22,3 +22,8 @@ except Exception as e:
 # Configure logging
 logging.basicConfig(level=settings.log_level)
 logging.info("Configuration loaded successfully")
+
+# Additional configuration for production
+if os.getenv("PRODUCTION") == "true":
+    logging.info("Running in production mode")
+    # Additional production-specific configurations can be added here

@@ -1,17 +1,15 @@
-# quantum_api/tests/test_quantum_api.py
-import json
-from quantum_api.quantum_computation import run_quantum_circuit
+# tests/test_quantum_api.py
+import pytest
+from fastapi.testclient import TestClient
+from quantum_api.main import app
 
-def test_run_quantum_circuit():
-    circuit = {
-        "num_qubits": 2,
-        "gates": [
-            {"name": "h", "target": 0},
-            {"name": "cx", "control": 0, "target": 1}
-        ]
-    }
-    circuit_str = json.dumps(circuit)
-    counts = run_quantum_circuit(circuit_str)
-    # Verify that the result is a dictionary with expected measurement outcomes.
-    assert isinstance(counts, dict)
-    # Optionally add more assertions based on expected distributions.
+client = TestClient(app)
+
+def test_compute_endpoint():
+    # Test with a simple array of floats
+    payload = {"data": [0.0, 1.0, 2.0]}
+    response = client.post("/compute", json=payload)
+    assert response.status_code == 200
+    json_response = response.json()
+    assert "result" in json_response
+    # Optionally, add further checks on the structure or decrypt the result if needed

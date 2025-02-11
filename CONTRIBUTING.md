@@ -1,57 +1,79 @@
-# Contributing to Quantum API
+# Contributing to Quantum.API
 
-We welcome contributions from the community! Here are the guidelines to help you get started.
+We welcome contributions from the community! Whether you're fixing a bug, adding a new feature, or improving documentation, your help is greatly appreciated. Please take a moment to review this guide before contributing.
+
+## Table of Contents
+
+- [Code of Conduct](#code-of-conduct)
+- [How to Contribute](#how-to-contribute)
+  - [Reporting Bugs](#reporting-bugs)
+  - [Suggesting Enhancements](#suggesting-enhancements)
+  - [Pull Requests](#pull-requests)
+- [Development Setup](#development-setup)
+- [Coding Standards](#coding-standards)
 
 ## Code of Conduct
 
-Please note that this project is released with a Contributor Code of Conduct. By participating in this project you agree to abide by its terms.
+This project adheres to the Contributor Covenant [Code of Conduct](CODE_OF_CONDUCT.md). By participating, you are expected to uphold this code. Please report unacceptable behavior to [contact@example.com](mailto:contact@example.com).
 
 ## How to Contribute
 
 ### Reporting Bugs
 
-- Ensure the bug was not already reported by searching on GitHub under [Issues](https://github.com/quantumapi/quantum.api/issues).
-- If you're unable to find an open issue addressing the problem, [open a new one](https://github.com/quantumapi/quantum.api/issues/new). Be sure to include a title and clear description, as much relevant information as possible, and a code sample or an executable test case demonstrating the expected behavior that is not occurring.
+1. **Search for existing issues**: Before creating a new issue, please search the [issue tracker](https://github.com/quantumapi/quantum.api/issues) to see if the issue has already been reported.
+2. **Create a new issue**: If your issue is not already reported, create a new issue with a descriptive title and detailed description. Include steps to reproduce the issue, expected behavior, and actual behavior.
 
 ### Suggesting Enhancements
 
-- Open an issue following the guidelines for bug reports.
-- Clearly describe the enhancement you are proposing and why it would be beneficial.
+1. **Search for existing issues**: Before creating a new issue, please search the [issue tracker](https://github.com/quantumapi/quantum.api/issues) to see if the enhancement has already been suggested.
+2. **Create a new issue**: If your enhancement is not already suggested, create a new issue with a descriptive title and detailed description. Explain the use case and benefits of the enhancement.
 
 ### Pull Requests
 
-1. **Fork the Repository** and create your branch from `main`.
-2. **Ensure your code adheres to the project's coding standards and best practices**.
-3. **Write tests** to cover your changes.
-4. **Update the documentation** if necessary.
-5. **Submit a Pull Request** with a clear title and description.
+1. **Fork the repository**: Fork the repository to your own GitHub account.
+2. **Create a new branch**: Create a new branch for your changes.
+3. **Make your changes**: Implement your changes and ensure that all tests pass.
+4. **Update documentation**: If your changes affect the API or user interface, update the documentation accordingly.
+5. **Create a pull request**: Create a pull request with a descriptive title and detailed description. Reference any related issues.
 
 ## Development Setup
 
 1. **Clone the repository**:
-   ```sh
-   git clone https://github.com/quantumapi/quantum.api.git
-   cd quantum.api
-   ```
 
-2. **Install dependencies**:
-   ```sh
-   pip install -r requirements.txt
-   ```
+```bash
+git clone https://github.com/quantumapi/quantum.api.git
+cd quantum.api
+```
 
-3. **Run the application**:
-   ```sh
-   python start_server.py
-   ```
+2. **Set up a virtual environment**:
+
+```bash
+python -m venv venv
+source venv/bin/activate
+```
+
+3. **Install dependencies**:
+
+```bash
+pip install -r requirements.txt
+```
+
+4. **Set up environment variables**:
+
+Create a `.env` file based on `.env.example` and fill in the necessary values.
+
+5. **Run the application**:
+
+```bash
+uvicorn main:app --reload
+```
 
 ## Coding Standards
 
-- Follow PEP 8 for Python code.
+- Follow PEP 8 for Python code style.
 - Write clear and concise comments.
-- Ensure your code is well-documented.
-
-## License
-
-By contributing to Quantum API, you agree that your contributions will be licensed under the project's [MIT License](LICENSE).
+- Include docstrings for all public modules, classes, and functions.
+- Write unit tests for all new features and bug fixes.
+- Ensure all tests pass before submitting a pull request.
 
 Thank you for your contributions!

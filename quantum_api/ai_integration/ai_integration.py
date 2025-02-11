@@ -1,25 +1,23 @@
+# quantum_api/ai_integration/ai_integration.py
 from sklearn.neural_network import MLPRegressor
 import numpy as np
 from quantum_api.utils.utils import setup_logging
-import logging
 
 logger = setup_logging()
-
-# For demonstration, a simple in-memory registry of AI models.
 _ai_models = {}
 
 def load_model(model_name: str) -> MLPRegressor:
     """
     Load an AI model by name.
-    In production, this could load a TensorFlow model or a serialized sklearn model.
+    In production, this should load a pre-trained model from persistent storage.
     """
     try:
         if model_name in _ai_models:
             return _ai_models[model_name]
         else:
-            # For demonstration, create and store a dummy model
+            # Placeholder: create and train a dummy model.
             model = MLPRegressor(hidden_layer_sizes=(50, 50), max_iter=500)
-            # Dummy training: in practice, load pre-trained weights.
+            # In production, load real training data and pre-trained weights.
             X = np.random.rand(10, 4)
             y = np.random.rand(10)
             model.fit(X, y)
@@ -45,10 +43,9 @@ def ai_optimize_quantum_circuit(circuit, ai_model):
 def extract_features(circuit) -> list:
     """
     Extract features from a quantum circuit.
-    (Placeholder: compute circuit depth, number of gates, entanglement measures, etc.)
+    Placeholder: return circuit depth and gate count.
     """
     try:
-        # For now, return dummy features
         return [[circuit.depth(), len(circuit.data)]]
     except Exception as e:
         logger.error(f"Error extracting features from quantum circuit: {e}")
@@ -57,10 +54,9 @@ def extract_features(circuit) -> list:
 def apply_parameters(circuit, params):
     """
     Apply optimized parameters to a circuit.
-    (Placeholder: modify gate angles or timings.)
+    This is a stub – production code should adjust gate parameters based on AI output.
     """
     try:
-        # This is a stub – in production, adjust the circuit based on params.
         return circuit
     except Exception as e:
         logger.error(f"Error applying parameters to quantum circuit: {e}")

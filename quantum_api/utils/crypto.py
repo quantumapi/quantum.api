@@ -1,30 +1,43 @@
-# quantum_api/utils/crypto.py
-from Crypto.Cipher import AES
-from Crypto.Util.Padding import pad, unpad
-import base64
+# crypto.py
 import os
+from cryptography.fernet import Fernet
+import logging
 
-class AESCipher:
-    def __init__(self, key: bytes):
-        if len(key) not in (16, 24, 32):
-            raise ValueError("Key must be 16, 24, or 32 bytes long.")
-        self.key = key
+logger = logging.getLogger(__name__)
 
-    def encrypt(self, raw: str) -> str:
-        iv = os.urandom(16)
-        cipher = AES.new(self.key, AES.MODE_CBC, iv)
-        ct_bytes = cipher.encrypt(pad(raw.encode('utf-8'), AES.block_size))
-        iv_encoded = base64.b64encode(iv).decode('utf-8')
-        ct_encoded = base64.b64encode(ct_bytes).decode('utf-8')
-        return f"{iv_encoded}:{ct_encoded}"
+class QuantumEncryption:
+    def __init__(self):
+        # Retrieve encryption key from environment or generate a new one.
+        # NOTE: In production, manage keys via a secure vault (e.g., HashiCorp Vault, AWS KMS)
+        key = os.getenv("ENCRYPTION_KEY")
+        if not key:
+            key = Fernet.generate_key()
+            logger.warning("No ENCRYPTION_KEY found in environment; generated temporary key.")
+        self.fernet = Fernet(key)
 
-    def decrypt(self, enc: str) -> str:
+    def encrypt(self, data):
+        """
+        Encrypts the provided data (converted to a string) using symmetric encryption.
+        For production, consider implementing quantum–resistant algorithms.
+        """
         try:
-            iv_encoded, ct_encoded = enc.split(":")
-            iv = base64.b64decode(iv_encoded)
-            ct = base64.b64decode(ct_encoded)
-            cipher = AES.new(self.key, AES.MODE_CBC, iv)
-            pt = unpad(cipher.decrypt(ct), AES.block_size)
-            return pt.decode('utf-8')
-        except (ValueError, KeyError) as e:
-            raise ValueError("Decryption failed.") from e
+            # Convert data (which could be a list or complex structure) to string
+            data_str = str(data)
+            encrypted = self.fernet.encrypt(data_str.encode())
+            logger.debug("Data encrypted successfully.")
+            return encrypted.decode()
+        except Exception as e:
+            logger.error("Encryption failed: %s", e)
+            raise
+
+    def decrypt(self, token):
+        """
+        Decrypts the provided token back into the original data string.
+        """
+        try:
+            decrypted = self.fernet.decrypt(token.encode())
+            logger.debug("Data decrypted successfully.")
+            return decrypted.decode()
+        except Exception as e:
+            logger.error("Decryption failed: %s", e)
+            raise

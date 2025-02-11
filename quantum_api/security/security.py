@@ -1,16 +1,20 @@
+# quantum_api/security/security.py
+import os
 from cryptography.fernet import Fernet
 from quantum_api.utils.utils import setup_logging
-import logging
 
 logger = setup_logging()
 
-# Generate a key for encryption and decryption
-key = Fernet.generate_key()
-cipher_suite = Fernet(key)
+# Load key from environment variable; fallback only for development
+KEY = os.getenv("FERNET_KEY")
+if not KEY:
+    logger.warning("FERNET_KEY not set; generating a temporary key.")
+    KEY = Fernet.generate_key()
+cipher_suite = Fernet(KEY)
 
 def encrypt_data(data: str) -> str:
     """
-    Encrypt the given data using Fernet symmetric encryption.
+    Encrypt data using Fernet symmetric encryption.
     """
     try:
         encrypted_data = cipher_suite.encrypt(data.encode())
@@ -21,7 +25,7 @@ def encrypt_data(data: str) -> str:
 
 def decrypt_data(encrypted_data: str) -> str:
     """
-    Decrypt the given encrypted data using Fernet symmetric encryption.
+    Decrypt data using Fernet symmetric encryption.
     """
     try:
         decrypted_data = cipher_suite.decrypt(encrypted_data.encode())

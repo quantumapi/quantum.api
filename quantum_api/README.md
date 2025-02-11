@@ -1,59 +1,196 @@
-# Supreme Quantum API
+# Quantum.API Documentation
 
-A production-ready, quantum-first API designed for advanced quantum computations, robust security, and scalable deployment.
+Welcome to the Quantum.API documentation. This guide provides detailed information on how to use the various endpoints provided by the Quantum.API platform.
 
-## Features
+## Table of Contents
 
-- **Quantum Simulation:** Run customizable quantum circuits using Qiskit.
-- **Secure Cryptography:** Integrated AES encryption with provisions for quantum-safe upgrades.
-- **Production API:** Built with FastAPI and Uvicorn for high-performance asynchronous operation.
-- **Containerized Deployment:** Docker-ready for seamless integration into CI/CD pipelines.
+- [Endpoints](#endpoints)
+  - [Create Quantum Circuit](#create-quantum-circuit)
+  - [Simulate Quantum Circuit](#simulate-quantum-circuit)
+  - [Optimize Quantum Circuit](#optimize-quantum-circuit)
+  - [Encrypt Data](#encrypt-data)
+  - [Decrypt Data](#decrypt-data)
+  - [Log to Blockchain](#log-to-blockchain)
+  - [Get Blockchain Log](#get-blockchain-log)
 
-## Setup & Installation
+## Endpoints
 
-1. **Clone the repository:**
+### Create Quantum Circuit
 
-   ```bash
-   git clone https://github.com/quantumapi/quantum.api.git
-   cd quantum.api
-   ```
+**Endpoint**: `POST /create_circuit`
 
-2. **Install dependencies:**
+**Description**: Create a quantum circuit based on a sequence of gate instructions.
 
-   ```bash
-   pip install -r requirements.txt
-   ```
+**Request Body**:
+```json
+{
+  "gate_sequence": [
+    {
+      "type": "H",
+      "target": 0
+    }
+  ],
+  "num_qubits": 2
+}
+```
 
-3. **Run tests:**
+**Response**:
+```json
+{
+  "circuit": "OPENQASM 2.0; ..."
+}
+```
 
-   ```bash
-   pytest quantum_api/tests/
-   ```
+### Simulate Quantum Circuit
 
-4. **Run the API locally:**
+**Endpoint**: `POST /simulate_circuit`
 
-   ```bash
-   uvicorn quantum_api.quantum_api:app --reload
-   ```
+**Description**: Simulate a quantum circuit based on a sequence of gate instructions.
 
-5. **Docker Build & Run:**
+**Request Body**:
+```json
+{
+  "gate_sequence": [
+    {
+      "type": "H",
+      "target": 0
+    }
+  ],
+  "num_qubits": 2
+}
+```
 
-   ```bash
-   docker build -t supreme-quantum-api .
-   docker run -d -p 8000:8000 supreme-quantum-api
-   ```
+**Response**:
+```json
+{
+  "statevector": [0.7071067811865475, 0, 0, 0.7071067811865475]
+}
+```
 
-## Advanced Configuration
+### Optimize Quantum Circuit
 
-- **Environment Variables:**
-  Configure `SECRET_KEY` and other sensitive settings via environment variables or secure vaults.
+**Endpoint**: `POST /optimize_circuit`
 
-- **Extending Quantum Gates:**
-  Add new gate types in `quantum_computation.py` as quantum algorithms evolve.
+**Description**: Optimize a quantum circuit using an AI model.
 
-- **Security Enhancements:**
-  For quantum-safe cryptography, integrate additional modules and update `utils/crypto.py`.
+**Request Body**:
+```json
+{
+  "gate_sequence": [
+    {
+      "type": "H",
+      "target": 0
+    }
+  ],
+  "num_qubits": 2
+}
+```
 
-## License & Contributing
+**Response**:
+```json
+{
+  "optimized_circuit": "OPENQASM 2.0; ..."
+}
+```
 
-This repository is under [Your License]. Contributions that enhance quantum integration and security are welcome.
+### Encrypt Data
+
+**Endpoint**: `POST /encrypt`
+
+**Description**: Encrypt data using Fernet symmetric encryption.
+
+**Request Body**:
+```json
+{
+  "data": "sensitive information"
+}
+```
+
+**Response**:
+```json
+{
+  "encrypted_data": "gAAAAABc..."
+}
+```
+
+### Decrypt Data
+
+**Endpoint**: `POST /decrypt`
+
+**Description**: Decrypt data using Fernet symmetric encryption.
+
+**Request Body**:
+```json
+{
+  "data": "gAAAAABc..."
+}
+```
+
+**Response**:
+```json
+{
+  "decrypted_data": "sensitive information"
+}
+```
+
+### Log to Blockchain
+
+**Endpoint**: `POST /log_to_blockchain`
+
+**Description**: Log an operation to the blockchain.
+
+**Request Body**:
+```json
+{
+  "operation": "create_circuit",
+  "details": {
+    "gate_sequence": [
+      {
+        "type": "H",
+        "target": 0
+      }
+    ],
+    "num_qubits": 2
+  }
+}
+```
+
+**Response**:
+```json
+{
+  "tx_hash": "0x1234567890abcdef..."
+}
+```
+
+### Get Blockchain Log
+
+**Endpoint**: `GET /get_blockchain_log/{tx_hash}`
+
+**Description**: Retrieve a log entry from the blockchain.
+
+**Path Parameters**:
+- `tx_hash`: The transaction hash of the log entry to retrieve.
+
+**Response**:
+```json
+{
+  "log": {
+    "operation": "create_circuit",
+    "details": {
+      "gate_sequence": [
+        {
+          "type": "H",
+          "target": 0
+        }
+      ],
+      "num_qubits": 2
+    }
+  }
+}
+```
+
+## Additional Information
+
+For more detailed information on the API, including request and response schemas, you can visit the interactive API documentation at `http://localhost:8000/docs`.
+
+Thank you for using Quantum.API!

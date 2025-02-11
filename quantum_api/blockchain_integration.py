@@ -2,6 +2,7 @@ import hashlib
 import json
 import time
 from typing import Dict, List
+import logging
 
 _audit_log: List[Dict] = []
 
@@ -22,10 +23,15 @@ def log_operation(operation_name: str, data: dict) -> None:
         entry["hash"] = entry_hash
         _audit_log.append(entry)
     except Exception as e:
+        logging.error("Failed to log operation: " + str(e))
         raise RuntimeError("Failed to log operation: " + str(e))
 
 def get_audit_log() -> List[Dict]:
     """
     Retrieve the current audit log.
     """
-    return _audit_log
+    try:
+        return _audit_log
+    except Exception as e:
+        logging.error("Failed to retrieve audit log: " + str(e))
+        raise RuntimeError("Failed to retrieve audit log: " + str(e))

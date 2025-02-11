@@ -1,6 +1,7 @@
 from sklearn.neural_network import MLPRegressor
 import numpy as np
 from quantum_api.utils.utils import setup_logging
+import logging
 
 logger = setup_logging()
 
@@ -26,7 +27,7 @@ def load_model(model_name: str) -> MLPRegressor:
             return model
     except Exception as e:
         logger.error(f"Error loading AI model: {e}")
-        raise
+        raise RuntimeError("Error loading AI model: " + str(e))
 
 def ai_optimize_quantum_circuit(circuit, ai_model):
     """
@@ -39,7 +40,7 @@ def ai_optimize_quantum_circuit(circuit, ai_model):
         return optimized_circuit
     except Exception as e:
         logger.error(f"Error optimizing quantum circuit with AI model: {e}")
-        raise
+        raise RuntimeError("Error optimizing quantum circuit with AI model: " + str(e))
 
 def extract_features(circuit) -> list:
     """
@@ -51,7 +52,7 @@ def extract_features(circuit) -> list:
         return [[circuit.depth(), len(circuit.data)]]
     except Exception as e:
         logger.error(f"Error extracting features from quantum circuit: {e}")
-        raise
+        raise RuntimeError("Error extracting features from quantum circuit: " + str(e))
 
 def apply_parameters(circuit, params):
     """
@@ -63,4 +64,4 @@ def apply_parameters(circuit, params):
         return circuit
     except Exception as e:
         logger.error(f"Error applying parameters to quantum circuit: {e}")
-        raise
+        raise RuntimeError("Error applying parameters to quantum circuit: " + str(e))

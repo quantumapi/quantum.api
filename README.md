@@ -54,6 +54,9 @@ Before diving into the future of computation, ensure your system is ready:
    ```bash
    QUANTUM_API_KEY=your_api_key_here
    QUANTUM_BACKEND=qiskit  # Choose your preferred quantum backend
+   LOG_LEVEL=INFO  # Set the logging level (INFO, DEBUG, WARNING, ERROR, CRITICAL)
+   UVICORN_WORKERS=2  # Number of Uvicorn workers
+   SECRET_KEY=your_secret_key_here  # Add a secret key for enhanced security
    ```
 
 4. **Launch the Quantum API Server**:
@@ -78,6 +81,14 @@ Before diving into the future of computation, ensure your system is ready:
 ## Usage
 
 Welcome to the future of computing. Interact with Quantum.API through intuitive API calls that unlock powerful quantum operations.
+
+### Configuration and Error Handling
+
+Quantum.API includes robust configuration management and error handling to ensure smooth operation in production environments.
+
+- **Configuration Management**: The `config.py` file uses Pydantic for configuration management, ensuring all environment variables are correctly set and referenced.
+- **Error Handling**: The `config.py` file includes error handling for configuration issues, logging errors and raising exceptions if necessary.
+- **Logging Configuration**: The `config.py` file configures logging to include detailed information and better handling, ensuring that all log levels are managed effectively.
 
 ### 1. **Quantum Circuit Creation**
 

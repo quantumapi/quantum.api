@@ -1,6 +1,7 @@
 from typing import List, Dict, Any
 from qiskit import QuantumCircuit, QuantumRegister, ClassicalRegister
 from quantum_api.utils.utils import setup_logging
+import logging
 
 logger = setup_logging()
 
@@ -44,7 +45,7 @@ async def create_dynamic_quantum_circuit(gate_sequence: List[Dict[str, Any]], nu
         return circuit
     except Exception as e:
         logger.error(f"Error creating dynamic quantum circuit: {e}")
-        raise
+        raise RuntimeError("Error creating dynamic quantum circuit: " + str(e))
 
 async def apply_surface_code(circuit: QuantumCircuit) -> None:
     """
@@ -63,12 +64,16 @@ async def apply_surface_code(circuit: QuantumCircuit) -> None:
         circuit.measure(circuit.num_qubits - 1, 0)
     except Exception as e:
         logger.error(f"Error applying surface code: {e}")
-        raise
+        raise RuntimeError("Error applying surface code: " + str(e))
 
 async def create_error_corrected_circuit(gate_sequence: List[Dict[str, Any]], num_qubits: int) -> QuantumCircuit:
     """
     Build a dynamic circuit and then apply a surface code error correction scheme.
     """
-    circuit = await create_dynamic_quantum_circuit(gate_sequence, num_qubits)
-    await apply_surface_code(circuit)
-    return circuit
+    try:
+        circuit = await create_dynamic_quantum_circuit(gate_sequence, num_qubits)
+        await apply_surface_code(circuit)
+        return circuit
+    except Exception as e:
+        logger.error(f"Error creating error-corrected circuit: {e}")
+        raise RuntimeError("Error creating error-corrected circuit: " + str(e))

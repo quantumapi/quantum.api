@@ -1,5 +1,6 @@
 from blockchain import blockexplorer
 from quantum_api.utils.utils import setup_logging
+import logging
 
 logger = setup_logging()
 
@@ -14,7 +15,7 @@ def log_to_blockchain(operation: str, details: dict) -> str:
         return tx_hash
     except Exception as e:
         logger.error(f"Error logging to blockchain: {e}")
-        raise
+        raise RuntimeError("Error logging to blockchain: " + str(e))
 
 def get_blockchain_log(tx_hash: str) -> dict:
     """
@@ -27,4 +28,4 @@ def get_blockchain_log(tx_hash: str) -> dict:
         return log
     except Exception as e:
         logger.error(f"Error retrieving log from blockchain: {e}")
-        raise
+        raise RuntimeError("Error retrieving log from blockchain: " + str(e))

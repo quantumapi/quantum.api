@@ -1,5 +1,6 @@
 from cryptography.fernet import Fernet
 from quantum_api.utils.utils import setup_logging
+import logging
 
 logger = setup_logging()
 
@@ -16,7 +17,7 @@ def encrypt_data(data: str) -> str:
         return encrypted_data.decode()
     except Exception as e:
         logger.error(f"Error encrypting data: {e}")
-        raise
+        raise RuntimeError("Error encrypting data: " + str(e))
 
 def decrypt_data(encrypted_data: str) -> str:
     """
@@ -27,4 +28,4 @@ def decrypt_data(encrypted_data: str) -> str:
         return decrypted_data.decode()
     except Exception as e:
         logger.error(f"Error decrypting data: {e}")
-        raise
+        raise RuntimeError("Error decrypting data: " + str(e))

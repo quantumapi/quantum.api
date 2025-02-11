@@ -2,6 +2,7 @@ from typing import Any, List
 from qiskit import Aer, execute, QuantumCircuit
 import numpy as np
 from quantum_api.utils.utils import setup_logging
+import logging
 
 logger = setup_logging()
 
@@ -15,7 +16,7 @@ async def simulate_quantum_circuit(circuit: QuantumCircuit) -> Any:
         return result.get_statevector(circuit)
     except Exception as e:
         logger.error(f"Error simulating quantum circuit: {e}")
-        raise
+        raise RuntimeError("Error simulating quantum circuit: " + str(e))
 
 async def hybrid_simulate(quantum_state: list, operator: str, ai_model: Any) -> float:
     """
@@ -50,4 +51,4 @@ async def hybrid_simulate(quantum_state: list, operator: str, ai_model: Any) -> 
         return float(np.real(np.dot(state_vector.conjugate(), optimized_state)))
     except Exception as e:
         logger.error(f"Error performing hybrid simulation: {e}")
-        raise
+        raise RuntimeError("Error performing hybrid simulation: " + str(e))

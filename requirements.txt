@@ -1,4 +1,6 @@
-fastapi
-uvicorn[standard]
-qiskit
-cryptography
+fastapi==0.95.1
+uvicorn[standard]==0.20.0
+qiskit==0.43.1
+cryptography==41.0.2
+python-dotenv==1.0.0
+gunicorn==20.1.0

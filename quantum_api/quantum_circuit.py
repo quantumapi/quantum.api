@@ -8,7 +8,8 @@ def apply_surface_code(circuit):
     """
     # For demonstration, add one ancilla qubit
     ancilla_index = circuit.num_qubits
-    circuit.add_register(QuantumCircuit(1, 1))
+    circuit.add_register(QuantumRegister(1))
+    circuit.add_register(ClassicalRegister(1))
     # Entangle qubit 0 with the new ancilla (placeholder logic)
     circuit.cx(0, ancilla_index)
     circuit.measure(ancilla_index, 0)
@@ -21,7 +22,7 @@ def create_error_corrected_circuit(gate_sequence, qubits):
 from qiskit import QuantumCircuit
 
 def create_dynamic_quantum_circuit(gate_sequence, qubits):
-    circuit = QuantumCircuit(qubits)
+    circuit = QuantumCircuit(QuantumRegister(qubits), ClassicalRegister(qubits))
     for gate in gate_sequence:
         if gate['type'] == 'H':
             circuit.h(gate['target'])
@@ -42,5 +43,7 @@ def create_dynamic_quantum_circuit(gate_sequence, qubits):
         elif gate['type'] == 'CCX':
             circuit.ccx(gate['control1'], gate['control2'], gate['target'])
         # Add more gate types as needed
-    circuit.measure_all()
+    # Optional measurement
+    if measure:
+        circuit.measure_all()
     return circuit

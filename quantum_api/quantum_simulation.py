@@ -6,7 +6,9 @@ def simulate_quantum_circuit(circuit):
     statevector = result.get_statevector()
     return statevector
 
-def hybrid_simulate(circuit, classical_optimizer):
+import numpy as np
+
+def hybrid_simulate(quantum_state, operator, classical_optimizer):
     """
     Simulate a quantum state’s evolution under a given operator.
     The ai_model (e.g., a TensorFlow/Keras model) is used to 'optimize' the result.

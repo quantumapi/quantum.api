@@ -1,23 +1,23 @@
-# Use an official Python runtime as a parent image
-FROM python:3.12-slim
-
-# Set the working directory in the container
+# Stage 1: Builder
+FROM python:3.10-slim as builder
 WORKDIR /app
-
-# Copy the requirements file into the container
+# Install build dependencies if necessary (e.g., gcc, libffi-dev, etc.)
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
+    && rm -rf /var/lib/apt/lists/*
 COPY requirements.txt .
-
-# Install any needed packages specified in requirements.txt
+RUN pip install --upgrade pip
 RUN pip install --no-cache-dir -r requirements.txt
-
-# Copy the rest of the application code into the container
 COPY . .
 
-# Make port 80 available to the world outside this container
-EXPOSE 80
-
-# Define environment variable
-ENV NAME QuantumAPI
-
-# Run uvicorn when the container launches
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "80"]
+# Stage 2: Runtime
+FROM python:3.10-slim
+WORKDIR /app
+# Copy installed packages and source code from builder
+COPY --from=builder /usr/local/lib/python3.10/site-packages /usr/local/lib/python3.10/site-packages
+COPY --from=builder /app /app
+# Create non-root user and switch to it
+RUN adduser --disabled-password quantum
+USER quantum
+EXPOSE 8000
+CMD ["python", "start_server.py"]

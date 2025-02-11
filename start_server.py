@@ -1,51 +1,45 @@
 from flask import Flask, request, jsonify
-import quantum_api.quantum_circuit as qc
-import quantum_api.quantum_simulation as qs
-import quantum_api.ai_integration as ai_integration
-import quantum_api.quantum_communication as qc
+from quantum_api import quantum_circuit, quantum_simulation, ai_integration
+import tensorflow as tf
 
 app = Flask(__name__)
 
 @app.route('/create_dynamic_circuit', methods=['POST'])
-def create_dynamic_circuit():
-    data = request.get_json()
-    gates = data['gates']
-    qubits = data['qubits']
-    result = qc.create_dynamic_quantum_circuit(gates, qubits)
-    return jsonify(result)
+def create_dynamic_circuit_endpoint():
+    try:
+        data = request.get_json()
+        gate_sequence = data['gates']  # Expecting a list of gate dictionaries
+        num_qubits = data['qubits']      # Number of qubits in the circuit
+        circuit = quantum_circuit.create_dynamic_quantum_circuit(gate_sequence, num_qubits)
+        # Serialize the circuit (e.g., in QASM format) for client-side visualization
+        circuit_qasm = circuit.qasm()
+        return jsonify({"status": "success", "qasm": circuit_qasm})
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)}), 400
 
-@app.route('/create_circuit', methods=['POST'])
-def create_circuit():
-    data = request.get_json()
-    gates = data['gates']
-    qubits = data['qubits']
-    result = qc.create_dynamic_quantum_circuit(gates, qubits)
-    return jsonify(result)
+@app.route('/simulate_with_ai', methods=['POST'])
+def simulate_with_ai_endpoint():
+    try:
+        data = request.get_json()
+        quantum_state = data['quantum_state']  # Should be a list of complex numbers
+        operator = data['operator']            # e.g., "X" or "H"
+        ai_model_config = data.get('ai_model_config', {})  # Optional configuration
 
-@app.route('/simulate', methods=['POST'])
-def simulate():
-    data = request.get_json()
-    quantum_state = data['quantum_state']
-    operator = data['operator']
-    ai_model = ai_integration.load_model(data['ai_model'])
-    result = qs.hybrid_simulate(quantum_state, operator, ai_model)
-    return jsonify(result)
+        # Load or build a dummy AI model.
+        # In a production system, you would load a pre-trained, secured model.
+        input_dim = len(quantum_state)
+        ai_model = tf.keras.Sequential([
+            tf.keras.layers.Dense(10, activation='relu', input_shape=(input_dim,)),
+            tf.keras.layers.Dense(1)
+        ])
+        ai_model.compile(optimizer='adam', loss='mse')
 
-@app.route('/predict', methods=['POST'])
-def predict():
-    data = request.get_json()
-    circuit = qc.create_dynamic_quantum_circuit(data['gates'], data['qubits'])
-    ai_model = ai_integration.load_model(data['ai_model'])
-    result = ai_integration.ai_optimize_quantum_circuit(circuit, ai_model)
-    return jsonify(result)
-
-@app.route('/communicate', methods=['POST'])
-def communicate():
-    data = request.get_json()
-    message = data['message']
-    destination = data['destination']
-    result = qc.secure_transmit_message(message, destination)
-    return jsonify(result)
+        # For demo purposes, we ignore 'circuit' and let hybrid_simulate work with the provided state.
+        fidelity = quantum_simulation.hybrid_simulate(None, operator, ai_model, quantum_state)
+        return jsonify({"status": "success", "fidelity": fidelity})
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)}), 400
 
 if __name__ == '__main__':
+    # Consider replacing debug=True with proper production logging and SSL/TLS configuration.
     app.run(debug=True, host='0.0.0.0', port=8000)

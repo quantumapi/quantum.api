@@ -5,7 +5,7 @@ from quantum_api.utils.utils import setup_logging
 
 logger = setup_logging()
 
-def simulate_quantum_circuit(circuit: QuantumCircuit) -> Any:
+async def simulate_quantum_circuit(circuit: QuantumCircuit) -> Any:
     """
     Simulate the quantum circuit and return the statevector.
     """
@@ -17,7 +17,7 @@ def simulate_quantum_circuit(circuit: QuantumCircuit) -> Any:
         logger.error(f"Error simulating quantum circuit: {e}")
         raise
 
-def hybrid_simulate(quantum_state: list, operator: str, ai_model: Any) -> float:
+async def hybrid_simulate(quantum_state: list, operator: str, ai_model: Any) -> float:
     """
     Hybrid simulation that uses a classical AI model to optimize the quantum operation.
     """

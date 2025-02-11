@@ -4,7 +4,7 @@ from quantum_api.utils.utils import setup_logging
 
 logger = setup_logging()
 
-def create_dynamic_quantum_circuit(gate_sequence: List[Dict[str, Any]], num_qubits: int) -> QuantumCircuit:
+async def create_dynamic_quantum_circuit(gate_sequence: List[Dict[str, Any]], num_qubits: int) -> QuantumCircuit:
     """
     Create a quantum circuit based on a sequence of gate instructions.
 
@@ -46,7 +46,7 @@ def create_dynamic_quantum_circuit(gate_sequence: List[Dict[str, Any]], num_qubi
         logger.error(f"Error creating dynamic quantum circuit: {e}")
         raise
 
-def apply_surface_code(circuit: QuantumCircuit) -> None:
+async def apply_surface_code(circuit: QuantumCircuit) -> None:
     """
     Apply a placeholder surface code error correction.
     In production, integrate a full error correction scheme.
@@ -65,10 +65,10 @@ def apply_surface_code(circuit: QuantumCircuit) -> None:
         logger.error(f"Error applying surface code: {e}")
         raise
 
-def create_error_corrected_circuit(gate_sequence: List[Dict[str, Any]], num_qubits: int) -> QuantumCircuit:
+async def create_error_corrected_circuit(gate_sequence: List[Dict[str, Any]], num_qubits: int) -> QuantumCircuit:
     """
     Build a dynamic circuit and then apply a surface code error correction scheme.
     """
-    circuit = create_dynamic_quantum_circuit(gate_sequence, num_qubits)
-    apply_surface_code(circuit)
+    circuit = await create_dynamic_quantum_circuit(gate_sequence, num_qubits)
+    await apply_surface_code(circuit)
     return circuit

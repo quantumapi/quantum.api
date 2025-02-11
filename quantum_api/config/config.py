@@ -1,12 +1,13 @@
-import os
-from dotenv import load_dotenv
+# config.py
+from pydantic_settings import BaseSettings, Field
 
-# Load environment variables from .env file
-load_dotenv()
+class Settings(BaseSettings):
+    quantum_api_key: str = Field(..., env="QUANTUM_API_KEY")
+    quantum_backend: str = Field("qiskit", env="QUANTUM_BACKEND")
+    log_level: str = Field("INFO", env="LOG_LEVEL")
+    uvicorn_workers: int = Field(2, env="UVICORN_WORKERS")
 
-class Config:
-    API_KEY = os.getenv('API_KEY')
-    LOG_LEVEL = os.getenv('LOG_LEVEL', 'INFO')
-    DATABASE_URL = os.getenv('DATABASE_URL')
+    class Config:
+        env_file = ".env"
 
-config = Config()
+settings = Settings()

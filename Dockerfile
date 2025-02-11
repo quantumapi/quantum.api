@@ -1,24 +1,16 @@
-# Base image for quantum simulation
-FROM python:3.8-slim as base
 
-# Python dependencies for quantum and AI packages
-FROM python:3.8-slim as builder
+# Use a multi-stage build for a slim, production-ready image
 
+# Stage 1: Build environment
+FROM python:3.10-slim AS builder
 WORKDIR /app
-
 COPY . /app
+RUN pip install --upgrade pip \
+    && pip install --no-cache-dir -r requirements.txt
 
-RUN pip install --no-cache-dir -r requirements.txt
-
-# Final image
-FROM python:3.8-slim
-
+# Stage 2: Final runtime image
+FROM python:3.10-slim
 WORKDIR /app
-
 COPY --from=builder /app /app
-
-RUN pip install --no-cache-dir -r requirements.txt
-
 EXPOSE 8000
-
 CMD ["python", "start_server.py"]

@@ -10,39 +10,33 @@ def simulate_quantum_circuit(circuit: QuantumCircuit) -> Any:
     result = execute(circuit, simulator).result()
     return result.get_statevector(circuit)
 
-def hybrid_simulate(circuit: QuantumCircuit, operator: str, ai_model: Any, quantum_state: List[complex]) -> float:
+def hybrid_simulate(quantum_state: list, operator: str, ai_model: Any) -> float:
     """
-    Hybrid simulation that integrates quantum state evolution with AI optimization.
-
-    Parameters:
-      - circuit: The quantum circuit (unused in this dummy demo but reserved for future integration).
-      - operator: The quantum operator to apply (e.g., 'X' or 'H').
-      - ai_model: A pre-loaded AI model (e.g., a TensorFlow/Keras model) that predicts a scaling factor.
-      - quantum_state: The initial state vector as a list of complex numbers.
-
-    Returns:
-      - A fidelity metric (as a float) comparing the optimized state with the input state.
+    Hybrid simulation that uses a classical AI model to optimize the quantum operation.
     """
-    # Ensure the input quantum_state is a numpy array
-    qs_array = np.array(quantum_state)
-    # Reshape the state for prediction (assumes model expects a 2D input)
-    scaling_factor = ai_model.predict(qs_array.reshape(1, -1))[0][0]
+    import numpy as np  # Ensure numpy is imported locally if needed
 
-    # Create a new circuit that applies the specified operator on a single qubit
-    new_circuit = QuantumCircuit(1)
+    # Convert quantum_state to a numpy array
+    state_vector = np.array(quantum_state)
+
+    # Dummy AI decision based on extracted features (for production, replace with proper extraction)
+    ai_decision = ai_model.predict([state_vector])[0]
+
+    # Create a minimal circuit to apply the operator
+    circuit = QuantumCircuit(1)
     if operator == "X":
-        new_circuit.x(0)
+        circuit.x(0)
     elif operator == "H":
-        new_circuit.h(0)
+        circuit.h(0)
     else:
-        raise ValueError(f"Unsupported operator: {operator}")
+        raise ValueError("Unsupported operator provided.")
 
     simulator = Aer.get_backend('statevector_simulator')
-    result = execute(new_circuit, simulator).result()
-    final_state = result.get_statevector(new_circuit)
+    result = execute(circuit, simulator).result()
+    final_state = result.get_statevector(circuit)
 
-    # Apply the scaling factor from the AI model to the final state vector
-    optimized_state = final_state * scaling_factor
-    # Compute the overlap (fidelity) between the original and optimized states
-    fidelity = float(np.abs(np.dot(np.conjugate(qs_array), optimized_state)))
-    return fidelity
+    # Apply dummy optimization: scale the final state vector
+    optimized_state = final_state * ai_decision
+
+    # Return a similarity measure between the input state and the optimized state
+    return float(np.real(np.dot(state_vector.conjugate(), optimized_state)))

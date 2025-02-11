@@ -1,101 +1,45 @@
+# security.py
+from fastapi import Request, HTTPException
+from starlette.middleware.base import BaseHTTPMiddleware
 import os
-import qiskit
-from qiskit import QuantumCircuit, Aer, execute
-from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
-from cryptography.hazmat.primitives import padding
-from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
-from cryptography.hazmat.primitives import hashes
-from cryptography.hazmat.backends import default_backend
-import hashlib
-import logging
-from pqcrypto.kem import kyber
+from cryptography.fernet import Fernet
+import bandit
 
-def generate_quantum_key():
-    """
-    Generate a secure quantum key using a real QKD protocol.
-    """
-    try:
-        # Placeholder for actual QKD implementation
-        return os.urandom(16)  # 128-bit random key
-    except Exception as e:
-        logging.error("Failed to generate quantum key: " + str(e))
-        raise RuntimeError("Failed to generate quantum key: " + str(e))
-    """
-    Generate a secure quantum key using a real QKD protocol.
-    """
-    try:
-        # Placeholder for actual QKD implementation
-        return os.urandom(16)  # 128-bit random key
-    except Exception as e:
-        logging.error("Failed to generate quantum key: " + str(e))
-        raise RuntimeError("Failed to generate quantum key: " + str(e))
+class RateLimitMiddleware(BaseHTTPMiddleware):
+    def __init__(self, app, max_requests: int, window_seconds: int):
+        super().__init__(app)
+        self.max_requests = max_requests
+        self.window_seconds = window_seconds
+        self.clients = {}
 
-def get_aes_cipher():
-    """
-    Derive an AES encryption cipher from the generated quantum key.
-    """
-    try:
-        key = generate_quantum_key()
-        aes_key = hashlib.sha256(key).digest()[:16]  # Use first 128 bits
-        cipher = Cipher(algorithms.AES(aes_key), modes.GCM(aes_key[:12]), backend=default_backend())
-        return cipher.encryptor()
-    except Exception as e:
-        logging.error("Failed to get AES cipher: " + str(e))
-        raise RuntimeError("Failed to get AES cipher: " + str(e))
-    """
-    Derive an AES encryption cipher from the generated quantum key.
-    """
-    try:
-        key = generate_quantum_key()
-        aes_key = hashlib.sha256(key).digest()[:16]  # Use first 128 bits
-        cipher = Cipher(algorithms.AES(aes_key), modes.GCM(aes_key[:12]), backend=default_backend())
-        return cipher.encryptor()
-    except Exception as e:
-        logging.error("Failed to get AES cipher: " + str(e))
-        raise RuntimeError("Failed to get AES cipher: " + str(e))
+    async def dispatch(self, request: Request, call_next):
+        client_ip = request.client.host
+        if client_ip not in self.clients:
+            self.clients[client_ip] = []
+        request_times = self.clients[client_ip]
+        current_time = request.scope["time"]
+        request_times = [t for t in request_times if current_time - t < self.window_seconds]
+        if len(request_times) >= self.max_requests:
+            raise HTTPException(status_code=429, detail="Too many requests")
+        request_times.append(current_time)
+        self.clients[client_ip] = request_times
+        response = await call_next(request)
+        return response
 
-def validate_data(data: bytes) -> None:
-    """
-    Validate the input data to ensure it is in the correct format.
-    """
-    if not isinstance(data, bytes):
-        raise ValueError("Invalid data provided. Data must be of type bytes.")
-    """
-    Validate the input data to ensure it is in the correct format.
-    """
-    if not isinstance(data, bytes):
-        raise ValueError("Invalid data provided. Data must be of type bytes.")
+SECRET_KEY = os.getenv("SECRET_KEY", "default_secret_key")
 
-def post_quantum_encrypt(data: bytes):
-    """
-    Encrypt data using a post-quantum encryption algorithm.
-    """
-    try:
-        validate_data(data)
-        # Generate public and private keys
-        public_key, private_key = kyber.generate_keypair()
+# Generate a key for encryption
+encryption_key = Fernet.generate_key()
+cipher_suite = Fernet(encryption_key)
 
-        # Encrypt the data
-        ciphertext = kyber.encrypt(public_key, data)
+# Example encryption function
+def encrypt_data(data: str) -> str:
+    return cipher_suite.encrypt(data.encode()).decode()
 
-        return ciphertext, private_key
-    except Exception as e:
-        logging.error("Post-quantum encryption error: " + str(e))
-        raise RuntimeError("Post-quantum encryption error: " + str(e))
-    """
-    Encrypt data using a post-quantum encryption algorithm.
-    """
-    try:
-        validate_data(data)
-        from pqcrypto.kem import kyber
+# Example decryption function
+def decrypt_data(encrypted_data: str) -> str:
+    return cipher_suite.decrypt(encrypted_data.encode()).decode()
 
-        # Generate public and private keys
-        public_key, private_key = kyber.generate_keypair()
-
-        # Encrypt the data
-        ciphertext = kyber.encrypt(public_key, data)
-
-        return ciphertext, private_key
-    except Exception as e:
-        logging.error("Post-quantum encryption error: " + str(e))
-        raise RuntimeError("Post-quantum encryption error: " + str(e))
+# Perform security audit using Bandit
+def perform_security_audit():
+    bandit.main(["-r", "."])
